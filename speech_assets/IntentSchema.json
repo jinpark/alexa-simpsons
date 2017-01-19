@@ -1,13 +1,13 @@
 {
   "intents": [
     {
-      "intent": "AMAZON.PauseIntent"
+      "intent": "SeasonIntent"
     },
     {
-      "intent": "DemoIntent"
+      "intent": "SeasonEpisodeIntent"
     },
     {
-      "intent": "SaxIntent"
+      "intent": "FastForwardIntent"
     },
     {
       "intent": "AMAZON.StopIntent"
@@ -17,6 +17,9 @@
     },
     {
       "intent": "AMAZON.NextIntent"
+    },
+    {
+      "intent": "AMAZON.PauseIntent"
     }
   ]
 }

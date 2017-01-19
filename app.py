@@ -3,6 +3,7 @@ import random
 import os
 
 import boto3
+import dataset
 
 from flask import Flask, json, render_template
 from flask_ask import Ask, request, session, question, statement, context, audio, current_stream
@@ -12,15 +13,16 @@ ask = Ask(app, "/")
 logger = logging.getLogger()
 logging.getLogger('flask_ask').setLevel(logging.INFO)
 
-BUCKET_NAME = 'alexa-simpsons'
-simpsons_filenames = []
+db = dataset.connect('sqlite:///alexa-simpsons.db')
+episodes = db['episodes']
+
 client = boto3.client(
     's3',
     aws_access_key_id=os.environ['S3_KEY'],
     aws_secret_access_key=os.environ['S3_SECRET']
 )
-for key in client.list_objects(Bucket=BUCKET_NAME)['Contents']:
-    simpsons_filenames.append(key['Key'])
+BUCKET_NAME = 'alexa-simpsons'
+
 
 def get_url(filename):
     return client.generate_presigned_url(
@@ -33,21 +35,44 @@ def get_url(filename):
 
 @ask.launch
 def launch():
-    random_episode_key = random.choice(simpsons_filenames)
-    episode_title = random_episode_key[13:-4]
-    stream_url = get_url(random_episode_key)
+    all_episodes = list(episodes.all())
+    random_episode = random.choice(all_episodes)
+    stream_url = get_url(random_episode['key'])
     card_title = 'Simpsons Audio'
-    text = "Playing: {}".format(episode_title)
+    text = "Playing: Season {}, Episode {}, {}".format(random_episode['season'], random_episode['episode'], random_episode['title'])
     return audio(text).simple_card(card_title, text).play(stream_url)
 
 @ask.intent('AMAZON.NextIntent')
 def next_episode():
-    random_episode_key = random.choice(simpsons_filenames)
-    episode_title = random_episode_key[13:-4]
-    stream_url = get_url(random_episode_key)
+    all_episodes = list(episodes.all())
+    random_episode = random.choice(all_episodes)
+    stream_url = get_url(random_episode['key'])
     card_title = 'Simpsons Audio'
-    text = "Playing: {}".format(episode_title)
+    text = "Playing: Season {}, Episode {}, {}".format(random_episode['season'], random_episode['episode'], random_episode['title'])
     return audio(text).simple_card(card_title, text).play(stream_url)
+
+@ask.intent('SeasonIntent', convert={'season': int})
+def season(season):
+    if 'season' in convert_errors:
+        return question("Can you please repeat the season? We only accept up to season 10.")
+    season_episodes = list(episodes.find(season=season))
+    if len(season_episodes) < 1:
+        return question("Can you please try another season? We do not have that season.")
+    random_episode = random.choice(season_episodes)
+    stream_url = get_url(random_episode['key'])
+    card_title = 'Simpsons Audio'
+    text = "Playing: Season {}, Episode {}, {}".format(random_episode['season'], random_episode['episode'], random_episode['title'])
+    return audio(text).simple_card(card_title, text).play(stream_url)
+
+@ask.intent('FastForwardIntent', convert={'seconds': int})
+def fast_forward(seconds):
+    if not current_stream:
+        return statement("You are not currently playing anything.")
+    if 'seconds' in convert_errors:
+        return question("Can you please repeat the seconds?")
+    current_time = current_stream.offsetInMilliseconds
+    new_time = current_time + (seconds * 1000)
+    return audio("").play(current_stream.url, offset=new_time)
 
 @ask.intent('AMAZON.PauseIntent')
 def pause():
