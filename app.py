@@ -11,7 +11,7 @@ from flask_ask import Ask, request, session, question, statement, context, audio
 app = Flask(__name__)
 ask = Ask(app, "/")
 logger = logging.getLogger()
-logging.getLogger('flask_ask').setLevel(logging.INFO)
+logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 
 db = dataset.connect('sqlite:///alexa-simpsons.db')
 episodes = db['episodes']
@@ -80,6 +80,8 @@ def season_episode(season, episode):
 
 @ask.intent('FastForwardIntent', convert={'seconds': int})
 def fast_forward(seconds):
+    print('current_stream fast_forward')
+    print(current_stream)
     if not current_stream:
         return statement("You are not currently playing anything.")
     if 'seconds' in convert_errors:
