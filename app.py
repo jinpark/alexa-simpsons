@@ -6,7 +6,7 @@ import boto3
 import dataset
 
 from flask import Flask, json, render_template
-from flask_ask import Ask, request, session, question, statement, context, audio, current_stream
+from flask_ask import Ask, request, session, question, statement, context, audio, current_stream, convert_errors
 
 app = Flask(__name__)
 ask = Ask(app, "/")

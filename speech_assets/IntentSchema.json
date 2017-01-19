@@ -1,13 +1,35 @@
 {
   "intents": [
     {
-      "intent": "SeasonIntent"
+      "intent": "SeasonIntent",
+      "slots": [
+              {
+                "name": "season",
+                "type": "integer"
+              }
+            ]
     },
     {
-      "intent": "SeasonEpisodeIntent"
+      "intent": "SeasonEpisodeIntent",
+      "slots": [
+              {
+                "name": "season",
+                "type": "integer"
+              },
+              {
+                "name": "episode",
+                "type": "integer"
+              }
+            ]
     },
     {
-      "intent": "FastForwardIntent"
+      "intent": "FastForwardIntent",
+      "slots": [
+              {
+                "name": "seconds",
+                "type": "integer"
+              }
+            ]
     },
     {
       "intent": "AMAZON.StopIntent"
