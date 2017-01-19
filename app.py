@@ -55,13 +55,27 @@ def next_episode():
 def season(season):
     if 'season' in convert_errors:
         return question("Can you please repeat the season? We only accept up to season 10.")
-    season_episodes = list(episodes.find(season=season))
+    season_episodes = episodes.find_one(season=season)
     if len(season_episodes) < 1:
         return question("Can you please try another season? We do not have that season.")
     random_episode = random.choice(season_episodes)
     stream_url = get_url(random_episode['key'])
     card_title = 'Simpsons Audio'
     text = "Playing: Season {}, Episode {}, {}".format(random_episode['season'], random_episode['episode'], random_episode['title'])
+    return audio(text).simple_card(card_title, text).play(stream_url)
+
+@ask.intent('SeasonEpisodeIntent', convert={'season': int, 'episode': int})
+def season_episode(season, episode):
+    if 'season' in convert_errors:
+        return question("Can you please repeat the season? We only accept up to season 10.")
+    if 'episode' in convert_errors:
+        return question("Can you please repeat the episode?")
+    season_episode = episodes.find_one(season=season, episode=episode)
+    if not season_episode:
+        return question("Can you please try another season and episode? We do not have that episode.")
+    stream_url = get_url(season_episode['key'])
+    card_title = 'Simpsons Audio'
+    text = "Playing: Season {}, Episode {}, {}".format(season_episode['season'], season_episode['episode'], season_episode['title'])
     return audio(text).simple_card(card_title, text).play(stream_url)
 
 @ask.intent('FastForwardIntent', convert={'seconds': int})
