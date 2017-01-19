@@ -80,8 +80,10 @@ def season_episode(season, episode):
 
 @ask.intent('FastForwardIntent', convert={'seconds': int})
 def fast_forward(seconds):
-    print('current_stream fast_forward')
-    print(current_stream)
+    print('current_stream fast_forward request')
+    _infodump(request)
+    print('current_stream fast_forward session')
+    _infodump(session)
     if not current_stream:
         return statement("You are not currently playing anything.")
     if 'seconds' in convert_errors:
