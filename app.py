@@ -55,7 +55,7 @@ def next_episode():
 def season(season):
     if 'season' in convert_errors:
         return question("Can you please repeat the season? We only accept up to season 10.")
-    season_episodes = episodes.find(season=season)
+    season_episodes = list(episodes.find(season=season))
     if len(season_episodes) < 1:
         return question("Can you please try another season? We do not have that season.")
     random_episode = random.choice(season_episodes)
