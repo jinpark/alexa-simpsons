@@ -80,8 +80,8 @@ def season_episode(season, episode):
 
 @ask.intent('FastForwardIntent', convert={'seconds': int})
 def fast_forward(seconds):
-    print('current_stream fast_forward request')
-    _infodump(request)
+    # print('current_stream fast_forward request')
+    # _infodump(request)
     print('current_stream fast_forward session')
     _infodump(session)
     if not current_stream:
