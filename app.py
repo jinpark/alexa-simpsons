@@ -1,4 +1,5 @@
 import logging
+import random
 import os
 
 import boto3
@@ -32,31 +33,25 @@ def get_url(filename):
 
 @ask.launch
 def launch():
-    card_title = 'Audio Example'
-    text = 'Welcome to an audio example. You can ask to begin demo, or try asking me to play the sax.'
-    prompt = 'You can ask to begin demo, or try asking me to play the sax.'
-    return question(text).reprompt(prompt).simple_card(card_title, text)
+    random_episode_key = random.choice(simpsons_filenames)
+    episode_title = random_episode_key[13:-4]
+    stream_url = get_url(random_episode_key)
+    card_title = 'Simpsons Audio'
+    text = "Playing: {}".format(episode_title)
+    return audio(text).simple_card(card_title, text).play(stream_url)
 
-
-@ask.intent('DemoIntent')
-def demo():
-    speech = "Simpsons Season 4 Episode 15 - I love lisa"
-    stream_url = get_url('the simpsons s04 - e15 I Love Lisa.mp3')
-    return audio(speech).play(stream_url)
-
-
-# 'ask audio_skil Play the sax
-@ask.intent('SaxIntent')
-def george_michael():
-    speech = 'yeah you got it!'
-    stream_url = 'https://ia800203.us.archive.org/27/items/CarelessWhisper_435/CarelessWhisper.ogg'
-    return audio(speech).play(stream_url)
-
+@ask.intent('AMAZON.NextIntent')
+def next_episode():
+    random_episode_key = random.choice(simpsons_filenames)
+    episode_title = random_episode_key[13:-4]
+    stream_url = get_url(random_episode_key)
+    card_title = 'Simpsons Audio'
+    text = "Playing: {}".format(episode_title)
+    return audio(text).simple_card(card_title, text).play(stream_url)
 
 @ask.intent('AMAZON.PauseIntent')
 def pause():
     return audio('Paused the stream.').stop()
-
 
 @ask.intent('AMAZON.ResumeIntent')
 def resume():
@@ -101,4 +96,5 @@ def _infodump(obj, indent=2):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
