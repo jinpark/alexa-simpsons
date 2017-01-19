@@ -55,7 +55,7 @@ def next_episode():
 def season(season):
     if 'season' in convert_errors:
         return question("Can you please repeat the season? We only accept up to season 10.")
-    season_episodes = episodes.find_one(season=season)
+    season_episodes = episodes.find(season=season)
     if len(season_episodes) < 1:
         return question("Can you please try another season? We do not have that season.")
     random_episode = random.choice(season_episodes)
@@ -83,8 +83,8 @@ def fast_forward(seconds):
     # print('current_stream fast_forward request')
     # _infodump(request)
     print('current_stream fast_forward session')
-    msg = json.dumps(session, indent=2)
-    print(msg)
+    # msg = json.dumps(session, indent=2)
+    print(session)
     if not current_stream:
         return statement("You are not currently playing anything.")
     if 'seconds' in convert_errors:
