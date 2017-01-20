@@ -5,7 +5,7 @@
       "slots": [
               {
                 "name": "season",
-                "type": "integer"
+                "type": "AMAZON.NUMBER"
               }
             ]
     },
@@ -14,20 +14,11 @@
       "slots": [
               {
                 "name": "season",
-                "type": "integer"
+                "type": "AMAZON.NUMBER"
               },
               {
                 "name": "episode",
-                "type": "integer"
-              }
-            ]
-    },
-    {
-      "intent": "FastForwardIntent",
-      "slots": [
-              {
-                "name": "seconds",
-                "type": "integer"
+                "type": "AMAZON.NUMBER"
               }
             ]
     },

@@ -1,4 +1,3 @@
 SeasonIntent play season {season}
 SeasonEpisodeIntent play season {season} episode {episode}
 SeasonEpisodeIntent play episode {episode} season {season}
-FastForwardIntent fast forward {seconds} seconds

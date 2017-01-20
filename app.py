@@ -13,6 +13,7 @@ ask = Ask(app, "/")
 logger = logging.getLogger()
 logging.getLogger('flask_ask').setLevel(logging.INFO)
 
+# using a local sqlite db because the data never changes
 db = dataset.connect('sqlite:///alexa-simpsons.db')
 episodes = db['episodes']
 
@@ -78,23 +79,24 @@ def season_episode(season, episode):
     text = "Playing: Season {}, Episode {}, {}".format(season_episode['season'], season_episode['episode'], season_episode['title'])
     return audio(text).simple_card(card_title, text).play(stream_url)
 
-@ask.intent('FastForwardIntent', convert={'seconds': int})
-def fast_forward(seconds):
-    print('current_stream fast_forward request')
-    print(request)
-    print('current_stream fast_forward session')
-    print(session)
-    if not current_stream:
-        return statement("You are not currently playing anything.")
-    if 'seconds' in convert_errors:
-        return question("Can you please repeat the seconds?")
-    current_time = current_stream.offsetInMilliseconds
-    new_time = current_time + (seconds * 1000)
-    return audio("").play(current_stream.url, offset=new_time)
+# non built in audio intents dont pass through the current_stream info. Will figure out later
+# @ask.intent('FastForwardIntent', convert={'seconds': int})
+# def fast_forward(seconds):
+#     print('current_stream fast_forward request')
+#     print(request)
+#     print('current_stream fast_forward session')
+#     print(session)
+#     if not current_stream:
+#         return statement("You are not currently playing anything.")
+#     if 'seconds' in convert_errors:
+#         return question("Can you please repeat the seconds?")
+#     current_time = current_stream.offsetInMilliseconds
+#     new_time = current_time + (seconds * 1000)
+#     return audio("").play(current_stream.url, offset=new_time)
 
 @ask.intent('AMAZON.PauseIntent')
 def pause():
-    return audio('Paused the stream.').stop()
+    return audio('Paused.').stop()
 
 @ask.intent('AMAZON.ResumeIntent')
 def resume():
@@ -140,4 +142,4 @@ def _infodump(obj, indent=2):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
